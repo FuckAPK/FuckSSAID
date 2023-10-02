@@ -40,7 +40,10 @@ public class MainHook implements IXposedHookLoadPackage {
                         @Override
                         protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                             super.beforeHookedMethod(param);
-
+                            if (context == null) {
+                                XposedBridge.log("Fuck SSAID: cannot get context for " + lpparam.packageName);
+                                return;
+                            }
                             org.baiyu.fuckssaid.Settings settings = org.baiyu.fuckssaid.Settings.getInstance(context);
 
                             String id = settings.getIdForPackage();
