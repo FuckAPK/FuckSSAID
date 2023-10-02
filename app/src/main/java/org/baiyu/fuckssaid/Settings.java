@@ -3,9 +3,6 @@ package org.baiyu.fuckssaid;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
-
 public class Settings {
 
     private static SharedPreferences prefs;
@@ -15,7 +12,7 @@ public class Settings {
     private static final String PREF_SSAID = "ssaid";
 
     private Settings(Context context) {
-        prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        prefs = context.getSharedPreferences(PREF_SSAID, Context.MODE_PRIVATE);
     }
 
     public static Settings getInstance(Context context) {
@@ -29,7 +26,6 @@ public class Settings {
         return INSTANCE;
     }
 
-    @Nullable
     public String getIdForPackage() {
         return prefs.getString(PREF_SSAID, null);
     }
