@@ -1,6 +1,7 @@
 package org.baiyu.fuckssaid;
 
 import android.app.AndroidAppHelper;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.provider.Settings;
 
@@ -9,6 +10,7 @@ import java.util.UUID;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
+import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class MainHook implements IXposedHookLoadPackage {
@@ -19,13 +21,15 @@ public class MainHook implements IXposedHookLoadPackage {
             return;
         }
         try {
-            XposedBridge.hookAllMethods(
+            XposedHelpers.findAndHookMethod(
                     Settings.Secure.class,
-                    "getString",
+                    "getStringForUser",
+                    ContentResolver.class,
+                    String.class,
+                    int.class,
                     new XC_MethodHook() {
                         @Override
-                        protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                            super.beforeHookedMethod(param);
+                        protected void afterHookedMethod(MethodHookParam param) {
                             Context context = AndroidAppHelper.currentApplication();
                             if (context == null) {
                                 XposedBridge.log("Fuck SSAID: cannot get context for " + lpparam.packageName);
@@ -39,8 +43,7 @@ public class MainHook implements IXposedHookLoadPackage {
                                 settings.setIdForPackage(id);
                                 XposedBridge.log("Fuck SSAID: new id generated for " + lpparam.packageName + ": " + id);
                             }
-
-                            if (param.args[1] instanceof String s && s.equals(Settings.Secure.ANDROID_ID)) {
+                            if (Settings.Secure.ANDROID_ID.equals(param.args[1])) {
                                 param.setResult(id);
                                 XposedBridge.log(lpparam.packageName + " is getString android id (hooked): " + id);
                             }
