@@ -21,3 +21,4 @@
 #-renamesourcefileattribute SourceFile
 
 -keep class org.baiyu.fuckssaid.MainHook
+-dontobfuscate
