@@ -1,38 +1,26 @@
-package org.baiyu.fuckssaid;
+package org.baiyu.fuckssaid
 
-import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.SharedPreferences
+import kotlin.concurrent.Volatile
 
-public class Settings {
+class Settings private constructor(private val prefs: SharedPreferences) {
+    var idForPackage: String?
+        get() = prefs.getString(PREF_SSAID, null)
+        set(id) {
+            val editor = prefs.edit()
+            editor.putString(PREF_SSAID, id)
+            editor.apply()
+        }
 
-    private static SharedPreferences prefs;
+    companion object {
+        const val PREF_SSAID = "ssaid"
 
-    private volatile static Settings INSTANCE;
-
-    private static final String PREF_SSAID = "ssaid";
-
-    private Settings(Context context) {
-        prefs = context.getSharedPreferences(PREF_SSAID, Context.MODE_PRIVATE);
-    }
-
-    public static Settings getInstance(Context context) {
-        if (INSTANCE == null) {
-            synchronized (Settings.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = new Settings(context);
-                }
+        @Volatile
+        private var INSTANCE: Settings? = null
+        fun getInstance(prefs: SharedPreferences): Settings {
+            return INSTANCE ?: synchronized(this) {
+                INSTANCE ?: Settings(prefs).also { INSTANCE = it }
             }
         }
-        return INSTANCE;
-    }
-
-    public String getIdForPackage() {
-        return prefs.getString(PREF_SSAID, null);
-    }
-
-    public void setIdForPackage(String id) {
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(PREF_SSAID, id);
-        editor.apply();
     }
 }
