@@ -25,6 +25,9 @@ class MainHook : IXposedHookLoadPackage {
                 Int::class.javaPrimitiveType,
                 object : XC_MethodHook() {
                     override fun afterHookedMethod(param: MethodHookParam) {
+                        if (Secure.ANDROID_ID != param.args[1]) {
+                            return
+                        }
                         val context: Context? = AndroidAppHelper.currentApplication()
                         if (context == null) {
                             XposedBridge.log("Fuck SSAID: cannot get context for " + lpparam.packageName)
@@ -43,10 +46,8 @@ class MainHook : IXposedHookLoadPackage {
                             settings.idForPackage = id
                             XposedBridge.log("Fuck SSAID: new id generated for " + lpparam.packageName + ": " + id)
                         }
-                        if (Secure.ANDROID_ID == param.args[1]) {
-                            param.result = id
-                            XposedBridge.log(lpparam.packageName + " is getString android id (hooked): " + id)
-                        }
+                        param.result = id
+                        XposedBridge.log(lpparam.packageName + " is getString android id (hooked): " + id)
                     }
                 }
             )
