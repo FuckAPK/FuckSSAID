@@ -9,7 +9,6 @@ import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.XposedHelpers
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
-import java.util.UUID
 
 class MainHook : IXposedHookLoadPackage {
     override fun handleLoadPackage(lpparam: LoadPackageParam) {
@@ -40,12 +39,7 @@ class MainHook : IXposedHookLoadPackage {
                             )
                         )
 
-                        var id = settings.idForPackage
-                        if (id == null) {
-                            id = UUID.randomUUID().toString()
-                            settings.idForPackage = id
-                            XposedBridge.log("Fuck SSAID: new id generated for " + lpparam.packageName + ": " + id)
-                        }
+                        val id = settings.getOrCreateId()
                         param.result = id
                         XposedBridge.log(lpparam.packageName + " is getString android id (hooked): " + id)
                     }

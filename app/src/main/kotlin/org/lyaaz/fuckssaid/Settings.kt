@@ -12,6 +12,11 @@ class Settings private constructor(private val prefs: SharedPreferences) {
             editor.apply()
         }
 
+    @Synchronized
+    fun getOrCreateId(): String {
+        return idForPackage ?: java.util.UUID.randomUUID().toString().also { idForPackage = it }
+    }
+
     companion object {
         const val PREF_SSAID = "ssaid"
 
